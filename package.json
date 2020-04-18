@@ -2,18 +2,26 @@
   "name": "node-jasperreports-api",
   "version": "0.1.0",
   "description": "Driver connection for JasperReports Server",
-  "main": "main.js",
+  "main": "index.js",
   "author": "Henrique Starosky <hgs.true@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hgs2000/node-jasperreports-api.git"
+  },
   "license": "GPL-3.0",
   "private": false,
   "dependencies": {},
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
     "@babel/node": "^7.8.7",
-    "babel-preset-airbnb": "^5.0.0"
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "babel-plugin-root-import": "^6.5.0",
+    "babel-preset-airbnb": "^5.0.0",
+    "nodemon": "^2.0.3"
   },
   "scripts": {
-    "build": ""
+    "build": "babel src --out-dir dist"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
