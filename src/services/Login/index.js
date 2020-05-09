@@ -1,22 +1,43 @@
 // Web Service Login
-import axios from "axios";
+import axios from 'axios';
 
-/** @param {{host: String, port: Number}} data */
-export const getEncryptionKey = async (data) => fetch(`//${data.host}:${data.port}/jasperserver${(data.pro) ? '-pro' : ''}/GetEncryptionKey`)
+import { logger, jlogin } from '../../util';
+import { Connection } from '../../classes/Connection';
 
-/** @param {{host: String, port: Number}} data */
-export const loginV2 = async (data) => axios.post(`//${data.host}:${data.port}/jasperserver${(data.pro) ? '-pro' : ''}/rest_v2/login`).then((res) => {
-    global.axiosheader = res.headers['set-cookies']
-})
+/** @param {Connection} conn */
+export const getEncryptionKey = async (conn) =>
+    fetch(`${conn.getUrl()}/GetEncryptionKey?${jlogin(conn)}`);
 
-/** 
- * @param {{host: String, port: Number}} data 
+/** @param {Connection} conn */
+export const loginV2 = async (conn) =>
+    axios
+        .post(`${conn.getUrl()}/rest_v2/login?${jlogin(conn)}`)
+        .then((v) => {
+            // Since all will use j_username and j_password, no need to get headers
+            logger.log(v);
+            return true;
+        })
+        .catch((err) => {
+            // If it didn't work, it doesn't need to return
+            logger.error(err);
+            throw new Error(
+                "Couldn't connect to server. Use DEBUG=true to log"
+            );
+        });
+
+/**
+ * @param {Connection} conn
  * @description Returns logout.html
  */
-export const logout = async (data) => fetch(`//${data.host}:${data.port}/jasperserver${(data.pro) ? '-pro' : ''}/logout.html`)
+export const logout = async (conn) => fetch(`${conn.getUrl()}/logout.html`);
 
-/** @param {{host: String, port: Number}} data */
-export const serverInfoV2 = async (data) => {
-    const url = `${data.host}:${data.port}/jasperserver${(data.pro) ? '-pro' : ''}/rest_v2/serverInfo`
-    return axios.get(url, { withCredentials: true })
-}
+/** @param {Connection} conn */
+export const serverInfoV2 = async (conn) => {
+    console.log(conn.getUrl());
+    return axios.get(
+        `${conn.getUrl()}/rest_v2/serverInfo?${jlogin(conn)}`
+        /* , {
+        withCredentials: true,
+    } */
+    );
+};
