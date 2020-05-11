@@ -1,4 +1,6 @@
-import { loginV2 } from '../services/Login';
+import { login } from '../services/Login';
+import Axios from 'axios';
+import { jlogin } from '../util';
 
 /**
  * @typedef ConnectParams
@@ -25,11 +27,14 @@ export class Connection {
     /** @type {Boolean} */
     #pro = false;
 
+    #cookie = null; // Recebe o token para realizar as conexões
+
     user = () => this.#user;
     pass = () => this.#pass;
     host = () => this.#host;
     port = () => this.#port;
     pro = () => this.#pro;
+    cookie = () => this.#cookie;
 
     /**
      * @param {String} user - JasperReports Server username
@@ -47,9 +52,9 @@ export class Connection {
         this.#protocol;
     };
 
-    getUrl = () =>
-        `${this.#protocol}://${this.#host}:${this.#port}/jasperserver${
-            this.#pro ? '-pro' : ''
+    getUrl = (rest = false) =>
+        `${this.#protocol}://${this.#host}:${this.#port}/jasperserver${this.#pro ? '-pro' : ''}${
+            rest ? '/rest_v2' : ''
         }`;
 
     /**
@@ -57,7 +62,10 @@ export class Connection {
      */
     verify = async () => {
         // Tries to login using _user and _pass
-        return loginV2(this);
+        return Axios({ method: 'post', url: `${this.getUrl(true)}/login`, params: jlogin(this) }).then((v) => {
+            this.#cookie = v.headers['set-cookie'][0] + ';' + v.headers['set-cookie'][1];
+            return true;
+        });
     };
 
     /**

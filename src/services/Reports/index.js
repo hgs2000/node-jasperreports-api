@@ -1,49 +1,16 @@
 // Web Service Reports
+import Axios from 'axios';
 
-/** @param {{host: String, port: Number}} data */
-export const reportsV2 = async (data) =>
-    fetch(
-        `${data.host}:${data.port}/jasperserver${
-            data.pro ? '-pro' : ''
-        }/rest_v2/reports`
+import { resolver, jlogin } from '../../util';
+import { Connection } from '../../classes/Connection';
+
+/**
+ * @param {Connection} conn
+ * @param {{path: String}} config
+ */
+export const reportsV2 = async (conn, config) =>
+    resolver(
+        Axios.get(
+            `${conn.getUrl()}/rest_v2/reports/${config.path}?${jlogin(conn)}`
+        )
     );
-
-/** @param {{host: String, port: Number}} data */
-export const reportExecutionsV2 = async (data) =>
-    fetch(
-        `//${data.host}:${data.port}/jasperserver${
-            data.pro ? '-pro' : ''
-        }/rest_v2/reportExecutions`
-    );
-
-/** @param {{host: String, port: Number}} data */
-export const reportInputControlsV2 = async (data) =>
-    fetch(
-        `//${data.host}:${data.port}/jasperserver${
-            data.pro ? '-pro' : ''
-        }/rest_v2/reports/${data.report}/inputControls`
-    );
-
-/** @param {{host: String, port: Number}} data */
-export const reportOptionsV2 = async (data) =>
-    fetch(
-        `//${data.host}:${data.port}/jasperserver${
-            data.pro ? '-pro' : ''
-        }/rest_v2/reports/${data.report}/options`
-    );
-
-/** @param {{host: String, port: Number}} data */
-export const reportOptionsV2 = async (data) =>
-    fetch(
-        `//${data.host}:${data.port}/jasperserver${
-            data.pro ? '-pro' : ''
-        }/rest_v2/reports/${data.report}/jobs`
-    );
-
-/** @param {{host: String, port: Number}} data */
-export const queryExecutorV2 = async (data) =>
-    fetch(`//${data.host}:${data.port}/jasperserver-pro/rest_v2/queryExecutor`);
-
-/** @param {{host: String, port: Number}} data */
-export const reportOptionsV2 = async (data) =>
-    fetch(`//${data.host}:${data.port}/jasperserver-pro/rest_v2/caches/vds`);

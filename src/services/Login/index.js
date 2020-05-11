@@ -1,43 +1,21 @@
 // Web Service Login
-import axios from 'axios';
-
-import { logger, jlogin } from '../../util';
+import { jlogin, request } from '../../util';
 import { Connection } from '../../classes/Connection';
 
 /** @param {Connection} conn */
 export const getEncryptionKey = async (conn) =>
-    fetch(`${conn.getUrl()}/GetEncryptionKey?${jlogin(conn)}`);
+    request(conn, { method: 'post', url: '/GetEncryptionKey', params: jlogin(conn) }, true);
 
 /** @param {Connection} conn */
-export const loginV2 = async (conn) =>
-    axios
-        .post(`${conn.getUrl()}/rest_v2/login?${jlogin(conn)}`)
-        .then((v) => {
-            // Since all will use j_username and j_password, no need to get headers
-            logger.log(v);
-            return true;
-        })
-        .catch((err) => {
-            // If it didn't work, it doesn't need to return
-            logger.error(err);
-            throw new Error(
-                "Couldn't connect to server. Use DEBUG=true to log"
-            );
-        });
+export const login = async (conn) => request(conn, { method: 'post', url: '/login', params: jlogin(conn) });
 
 /**
  * @param {Connection} conn
  * @description Returns logout.html
+ * @deprecated This library doesn't require logging out
  */
-export const logout = async (conn) => fetch(`${conn.getUrl()}/logout.html`);
+export const logout = async (conn) => request(conn, { method: 'get', url: '/logout.html' }, true);
 
 /** @param {Connection} conn */
-export const serverInfoV2 = async (conn) => {
-    console.log(conn.getUrl());
-    return axios.get(
-        `${conn.getUrl()}/rest_v2/serverInfo?${jlogin(conn)}`
-        /* , {
-        withCredentials: true,
-    } */
-    );
-};
+export const serverInfo = async (conn) => request(conn, { method: 'get', url: '/serverInfo', params: jlogin(conn) });
+// resolver(axios.get(`${conn.getUrl()}/rest_v2/serverInfo?${jlogin(conn)}`));
